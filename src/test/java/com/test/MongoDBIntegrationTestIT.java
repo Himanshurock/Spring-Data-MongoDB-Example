@@ -28,9 +28,10 @@ public class MongoDBIntegrationTestIT {
 	public void createUser() {
 		
 		User user = new User();
-		user.setName("ITTest");
+		user.setName("ITest");
 		user.setUserId("TestId");
 		User returnUser = userRepo.save(user);
+		System.out.println("======userName====="+returnUser.getName());
 		Assert.assertNotNull(returnUser.getName());
 	}
 }
