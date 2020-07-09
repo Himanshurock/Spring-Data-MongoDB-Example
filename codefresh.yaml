@@ -1,0 +1,56 @@
+version: '1.0'
+stages:
+  - prepare
+  - test
+#   - build
+  - 'integration test'
+steps:
+  main_clone:
+    title: Cloning main repository...
+    stage: prepare
+    type: git-clone
+    repo: 'Himanshurock/Spring-Data-MongoDB-Example'
+    revision: master
+    git: github
+  run_unit_tests:
+    title: Compile/Unit test
+    stage: test
+    image: 'maven:3.5.2-jdk-8-alpine'
+    commands:
+      - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository test     
+#   build_app_image:
+#     title: Building Docker Image
+#     type: build
+#     stage: build
+#     image_name: app
+#     working_directory: ./
+#     tag: 'multi-stage'
+#     dockerfile: Dockerfile
+  run_integration_tests:
+    title: Integration test
+    stage: 'integration test'
+    image: maven:3.5.2-jdk-8-alpine
+    commands:
+     - env
+     - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository integration-test
+    environment:
+      - MONGO_PORT=27017
+#       - spring.data.mongodb.username=root
+#       - spring.data.mongodb.password=root
+#       - MONGO_HOST=mongo
+#       - spring.data.mongodb.uri=mongodb://mongo:27017/mydb
+      - spring.data.mongodb.port=27017
+      - spring.data.mongodb.host=mongo
+    services:
+      composition:
+        mongo:
+          image: mongo:latest
+          ports:
+            - 27017             
+#       readiness:
+#         timeoutSeconds: 60
+#         periodSeconds: 30
+#         image: mongo:latest
+#         commands:
+#           - "db"  
+#           - "nc -z mongo 27017"
